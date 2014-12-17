@@ -1,0 +1,29 @@
+<%- controller ||= params[:controller] -%>
+<%- pagination_url_params = params.merge(:controller => controller, :action => :browse, :search => params[:search], :update => 1) if page.prev? || page.next? -%>
+
+<ol>
+  <li class="found">
+    <%= rs_("%d %s found", page.pager.count, record_select_config.model.to_s.pluralize.titleize.downcase) %>
+  </li>
+  <% if page.prev? -%>
+  <%- prev_url = url_for(pagination_url_params.merge(:page => page.prev.number, :escape => false)) %>
+  <li class="pagination previous">
+    <%- previous_text = image_tag('record_select/previous.gif', :alt => rs_('Previous')) + " " + rs_("Previous %d", page.pager.per_page) %>
+    <%- previous_text = "<div>#{previous_text}</div>" %>
+    <%= link_to_remote previous_text, {:url => prev_url, :method => :get}, {:href => prev_url} %>
+  </li>
+  <% end -%>
+  <% page.items.each do |record| -%>
+  <li class="record <%= cycle 'odd', 'even' %>" id="rs<%= record.id -%>">
+    <%= render_record_in_list(record, controller) %>
+  </li>
+  <% end -%>
+  <% if page.next? -%>
+  <%- next_url = url_for(pagination_url_params.merge(:page => page.next.number, :escape => false)) %>
+  <li class="pagination next">
+    <%- next_text = rs_("Next %d", page.pager.per_page) + " " + image_tag('record_select/next.gif', :alt => rs_('Next')) %>
+    <%- next_text = "<div>#{next_text}</div>" %>
+    <%= link_to_remote next_text, {:url => next_url, :method => :get}, {:href => next_url} %>
+  </li>
+  <% end -%>
+</ol>

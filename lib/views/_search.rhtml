@@ -1,0 +1,28 @@
+<% search_url = url_for(params.merge(:controller => controller, :action => :browse, :page => 1, :update => 1, :escape => false)) -%>
+<%# form_remote_tag :url => search_url, :method => :get,
+  #                 :html => { :action => search_url, :id => record_select_search_id } do
+  #                 %>
+<% form_remote_tag :url => search_url, :method => :get, :html => { :action => search_url, :id => record_select_search_id } do %>
+  <%= text_field_tag 'search', params[:search], :autocomplete => 'off', :class => 'text-input' %>
+<% end %>
+
+<script type="text/javascript">
+//<![CDATA[
+var record_select_search = jQuery(<%= ("#" + record_select_search_id).to_json %>);
+if(record_select_search[0]) {
+  record_select_search[0].onsubmit = function(_this) {
+    _thisfrm = record_select_search;
+    _this.ajaxGetSearh = jQuery.ajax({
+      url: '<%=h search_url -%>',
+      data: _thisfrm.serialize(),
+      success: function(data) {
+        eval(data);
+        _this.highlightFirst();
+      }
+    });
+
+    return false;
+  };
+};
+//]]>
+</script>
